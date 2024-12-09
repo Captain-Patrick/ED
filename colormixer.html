@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everdoo Color Mixer</title>
+    <style>
+        /* Body Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(145deg, #f0f4f8, #e2e7ed);
+            color: #333;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Container Styling */
+        .color-tool {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+        }
+
+        .color-tool h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .color-tool p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Color Picker Section */
+        .picker-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .picker-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        #color-picker {
+            width: 100px;
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Color Circles */
+        .color-selection {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .color-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .color-circle:hover {
+            transform: scale(1.15);
+        }
+
+        /* Result Section Styling */
+        #result {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+            background: #f9f9f9;
+        }
+
+        .result-item:hover {
+            background: #f1f1f1;
+        }
+
+        .color-label {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .color-label.red {
+            background: #ff4d4d;
+        }
+
+        .color-label.yellow {
+            background: #ffd633;
+        }
+
+        .color-label.blue {
+            background: #4d79ff;
+        }
+
+        span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Color Mix Bar Styling */
+        .color-bar {
+            width: 100%;
+            height: 40px;
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-bar div {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="color-tool">
+        <h1>🎨 Everdoo Color Mixer</h1>
+        <p>Wähle eine Farbe und erhalte die Mischungsverhältnisse:</p>
+
+        <!-- Color Picker Section -->
+        <div class="picker-section">
+            <span class="picker-label">Individuelle Auswahl:</span>
+            <input type="color" id="color-picker" value="#ff0000">
+        </div>
+
+        <!-- Vorauswahl der Farben -->
+        <div class="color-selection">
+            <div class="color-circle" style="background: #ff0000;" data-color="#ff0000"></div>
+            <div class="color-circle" style="background: #00ff00;" data-color="#00ff00"></div>
+            <div class="color-circle" style="background: #0000ff;" data-color="#0000ff"></div>
+            <div class="color-circle" style="background: #ffff00;" data-color="#ffff00"></div>
+            <div class="color-circle" style="background: #ff00ff;" data-color="#ff00ff"></div>
+        </div>
+
+        <div class="color-selection">
+            <div class="color-circle" style="background: #00ffff;" data-color="#00ffff"></div>
+            <div class="color-circle" style="background: #800000;" data-color="#800000"></div>
+            <div class="color-circle" style="background: #808000;" data-color="#808000"></div>
+            <div class="color-circle" style="background: #008080;" data-color="#008080"></div>
+            <div class="color-circle" style="background: #800080;" data-color="#800080"></div>
+        </div>
+
+        <div id="result">
+            <div class="result-item">
+                <span class="color-label red"></span> 
+                <span>Rot:</span> <span id="red">0</span>% 
+            </div>
+            <div class="result-item">
+                <span class="color-label yellow"></span> 
+                <span>Gelb:</span> <span id="yellow">0</span>% 
+            </div>
+            <div class="result-item">
+                <span class="color-label blue"></span> 
+                <span>Blau:</span> <span id="blue">0</span>% 
+            </div>
+        </div>
+
+        <div id="color-mix-bar" class="color-bar">
+            <div id="red-bar" style="background-color: #ff4d4d; width: 0%;"></div>
+            <div id="yellow-bar" style="background-color: #ffd633; width: 0%;"></div>
+            <div id="blue-bar" style="background-color: #4d79ff; width: 0%;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Event-Listener für den Color Picker
+        const colorPicker = document.getElementById('color-picker');
+
+        colorPicker.addEventListener('input', function () {
+            const selectedColor = colorPicker.value;
+            updateColorMix(selectedColor);
+        });
+
+        // Event-Listener für die Vorauswahl der Farben
+        const colorCircles = document.querySelectorAll('.color-circle');
+        colorCircles.forEach(circle => {
+            circle.addEventListener('click', function () {
+                const selectedColor = this.getAttribute('data-color');
+                updateColorPicker(selectedColor);
+                updateColorMix(selectedColor);
+            });
+        });
+
+        // Funktion zum Aktualisieren des Colorpickers
+        function updateColorPicker(hex) {
+            colorPicker.value = hex;
+        }
+
+        // Funktion zum Aktualisieren der Farbzusammensetzung
+        function updateColorMix(hex) {
+            const rgb = hexToRgb(hex);
+            const totalRgb = rgb.r + rgb.g + rgb.b;
+
+            if (totalRgb === 0) {
+                updateResults(0, 0, 0);
+                return;
+            }
+
+            const red = Math.round((rgb.r / totalRgb) * 100);
+            const green = Math.round((rgb.g / totalRgb) * 100);
+            const blue = Math.round((rgb.b / totalRgb) * 100);
+
+            // Apply the swap between yellow and green
+            const yellow = green; // Swap logic applied here
+
+            const sum = red + yellow + blue;
+            if (sum !== 100) {
+                const adjustment = 100 - sum;
+                if (red >= yellow && red >= blue) {
+                    red += adjustment;
+                } else if (yellow >= red && yellow >= blue) {
+                    yellow += adjustment;
+                } else {
+                    blue += adjustment;
+                }
+            }
+
+            updateResults(red, yellow, blue);
+        }
+
+        // Funktion zum Aktualisieren der Anzeige der Ergebnisse
+        function updateResults(red, yellow, blue) {
+            document.getElementById('red').textContent = red;
+            document.getElementById('yellow').textContent = yellow;
+            document.getElementById('blue').textContent = blue;
+
+            document.getElementById('red-bar').style.width = red + '%';
+            document.getElementById('yellow-bar').style.width = yellow + '%';
+            document.getElementById('blue-bar').style.width = blue + '%';
+        }
+
+        // Funktion zur Umwandlung von Hex in RGB
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.substring(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return { r, g, b };
+        }
+    </script>
+</body>
+</html>
